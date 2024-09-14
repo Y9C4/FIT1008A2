@@ -91,6 +91,8 @@ class HashyStepTable(Generic[K, V]):
         """
         Find the correct position for this key in the hash table using hashy probing.
 
+        Find the correct position for this key in the Hash Table using linear probing. This method should use the hash2 method to determine the step size when probing.
+
         Raises:
         KeyError: When the key is not in the table, but is_insert is False.
         FullError: When a table is full and cannot be inserted.
@@ -102,9 +104,19 @@ class HashyStepTable(Generic[K, V]):
         # Initial position
         position = self.hash(key)
 
-        # Custom logic to be implemented here
-        raise NotImplementedError
-    
+        while True:
+            if self.array[position] is None: #no element at position
+                if is_insert:
+                    return position
+                else:
+                    raise KeyError(key)
+            elif self.array[position][0] == key: #item associated with key is being updated
+                return position
+            
+            else: #collision handling
+                step = self.hash2(key)
+                position = (position + step) % self.table_size #takes a step forward based upon the value of the key to avoid clustering.
+
     def keys(self) -> list[K]:
         """
         Returns all keys in the hash table.
@@ -172,13 +184,16 @@ class HashyStepTable(Generic[K, V]):
 
     def __delitem__(self, key: K) -> None:
         """
-        Deletes a (key, value) using lazy deletion
+        Deletes a (key, value) using sentinel deletion
 
         Complexity:
         Best Case Complexity:
         Worst Case Complexity:
         """
-        raise NotImplementedError
+        position = self.hash(key)
+        step 
+        while True:
+            
 
     def is_empty(self) -> bool:
         return self.count == 0
