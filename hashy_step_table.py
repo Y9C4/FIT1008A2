@@ -67,12 +67,15 @@ class HashyStepTable(Generic[K, V]):
     def hash2(self, key: K) -> int:
         """
         Used to determine the step size for our hash table.
-
+        h2(key)= 1+(key%(table_size-1))
         Complexity:
         Best Case Complexity:
         Worst Case Complexity:
         """
-        raise NotImplementedError
+        h2v = 0
+        for char in key:
+            h2v = (h2v+ord(char)) % (self.table_size-1)
+        return h2v
 
     @property
     def table_size(self) -> int:
@@ -82,7 +85,7 @@ class HashyStepTable(Generic[K, V]):
         """
         Returns number of elements in the hash table
         """
-        return self.count
+
 
     def _hashy_probe(self, key: K, is_insert: bool) -> int:
         """

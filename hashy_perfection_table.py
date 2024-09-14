@@ -5,6 +5,7 @@ __since__ = '22/08/2024'
 
 from data_structures.referential_array import ArrayR
 from typing import Generic, Union, TypeVar
+from random_gen import RandomGen
 
 K = TypeVar('K')
 V = TypeVar('V')
@@ -35,11 +36,17 @@ class HashyPerfectionTable(Generic[K, V]):
         Hash a key for insert/retrieve/update into the hashtable.
 
         Complexity:
-        Best Case Complexity:
-        Worst Case Complexity:
+        Best Case Complexity: O(1) if the key is a single character
+        Worst Case Complexity: O(N) where N is the length of key.
         """
-        raise NotImplementedError
 
+        for char in key:
+            hash_value = (hash_value + ord(char))*68 / 37
+        
+        hash_value //= 1
+        hash_value %= 13
+        return int(hash_value)
+    
     def __len__(self) -> int:
         """
         Returns number of elements in the hash table

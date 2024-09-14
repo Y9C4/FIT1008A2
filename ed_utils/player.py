@@ -1,7 +1,5 @@
 from __future__ import annotations
 from constants import PlayerPosition, PlayerStats
-from data_structures.hash_table import LinearProbeTable
-from data_structures.referential_array import ArrayR
 
 
 class Player:
@@ -9,13 +7,6 @@ class Player:
     def __init__(self, name: str, position: PlayerPosition, age: int) -> None:
         """
         Constructor for the Player class
-        name - a string representing the name of the player. The name is given in the init method. You can assume the name is unique.
-
-        position - a position is given by the PlayerPosition in constants.py. The position is given in the init method. 
-
-        age - an integer representing the age of the player (must be 18 or higher). The age is given in the  init method. 
-
-        statistics - a data structure that holds the values of statistics relevant to the player. A list of statistics is given in the constants file as PlayerStats and on __init__ these stats should all be set to 0.
 
         Args:
             name (str): The name of the player
@@ -30,22 +21,11 @@ class Player:
             Worst Case Complexity:
 
         """
-        self.name = name
-        self.position = position
-        self.age = age
-        self.statistics = LinearProbeTable()
-            
-        for stat in PlayerStats:
-            if stat.value == "Last Five Results":
-                self.statistics[stat.value] = ArrayR(5)
-            else:
-                self.statistics[stat.value] = 0
-            
-
+        raise NotImplementedError
 
     def reset_stats(self) -> None:
         """
-        resets all  PlayerStats stats to 0. identical to __init__
+        Reset the stats of the player
 
         Returns:
             None
@@ -54,13 +34,12 @@ class Player:
             Best Case Complexity:
             Worst Case Complexity:
 
-        """       
-        for stat in PlayerStats:
-            self.statistics[stat.value] = 0
+        """
+        raise NotImplementedError
 
     def get_name(self) -> str:
         """
-        returns the name of the player.
+        Get the name of the player
 
         Returns:
             str: The name of the player
@@ -69,11 +48,11 @@ class Player:
             Best Case Complexity:
             Worst Case Complexity:
         """
-        return self.name
+        raise NotImplementedError
 
     def get_position(self) -> PlayerPosition:
         """
-        returns the position of the player.
+        Get the position of the player
 
         Returns:
             PlayerPosition: The position of the player
@@ -82,11 +61,11 @@ class Player:
             Best Case Complexity:
             Worst Case Complexity:
         """
-        return self.position
+        raise NotImplementedError
 
     def get_statistics(self):
         """
-        returns the statistics of the player.
+        Get the statistics of the player
 
         Returns:
             statistics: The players' statistics
@@ -95,14 +74,11 @@ class Player:
             Best Case Complexity:
             Worst Case Complexity:
         """
-        return self.statistics
-
-
+        raise NotImplementedError
 
     def __setitem__(self, statistic: PlayerStats, value: int) -> None:
         """
         Set the value of the player's stat based on the key that is passed.
-        updates the value of the statistic passed as  statistic.
 
         Args:
             statistic (PlayerStat): The key of the stat
@@ -115,15 +91,11 @@ class Player:
             Best Case Complexity:
             Worst Case Complexity:
         """
-        if type(statistic) == PlayerStats:
-            statistic = statistic.value
-            
-        self.statistics[statistic] = value
+        raise NotImplementedError
 
     def __getitem__(self, statistic: PlayerStats) -> int:
         """
         Get the value of the player's stat based on the key that is passed.
-        returns the value of the statistic passed as  key. 
 
         Args:
             statistic (PlayerStat): The key of the stat
@@ -135,7 +107,7 @@ class Player:
             Best Case Complexity:
             Worst Case Complexity:
         """
-        return self.statistics[statistic.value]
+        raise NotImplementedError
 
     def __str__(self) -> str:
         """
@@ -150,7 +122,7 @@ class Player:
         Complexity:
             Analysis not required.
         """
-        return (self.name, self.age, self.position, self.statistics)
+        return ""
 
     def __repr__(self) -> str:
         """Returns a string representation of the Player object.
