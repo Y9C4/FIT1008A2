@@ -54,6 +54,7 @@ class ArrayR(Generic[T]):
         """
         self.array[index] = value
 
+
     @classmethod
     def from_list(cls, lst: list) -> Union[ArrayR, None]:
         """ Creates an ArrayR from a list

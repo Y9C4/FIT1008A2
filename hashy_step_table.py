@@ -1,5 +1,4 @@
 """ Hash Table ADT
-
 Defines a Hash Table using a modified Linear Probe implementation for conflict resolution.
 """
 from __future__ import annotations
@@ -20,12 +19,10 @@ class FullError(Exception):
 class HashyStepTable(Generic[K, V]):
     """
     Hashy Step Table.
-
     Type Arguments:
         - K:    Key Type. In most cases should be string.
                 Otherwise `hash` should be overwritten.
         - V:    Value Type.
-
     Unless stated otherwise, all methods have O(1) complexity.
     """
 
@@ -37,7 +34,6 @@ class HashyStepTable(Generic[K, V]):
     def __init__(self, sizes=None) -> None:
         """
         Initialise the Hash Table.
-
         Complexity:
         Best Case Complexity: O(max(N, M)) where N is the length of TABLE_SIZES and M is the length of sizes.
         Worst Case Complexity: O(max(N, M)) where N is the length of TABLE_SIZES and M is the length of sizes.
@@ -47,11 +43,11 @@ class HashyStepTable(Generic[K, V]):
         self.size_index = 0
         self.array: ArrayR[Union[tuple[K, V], None]] = ArrayR(self.TABLE_SIZES[self.size_index])
         self.count = 0
+        self.dels = 0
 
     def hash(self, key: K) -> int:
         """
         Hash a key for insert/retrieve/update into the hashtable.
-
         Complexity:
         Best Case Complexity: O(len(key))
         Worst Case Complexity: O(len(key))
@@ -67,15 +63,18 @@ class HashyStepTable(Generic[K, V]):
     def hash2(self, key: K) -> int:
         """
         Used to determine the step size for our hash table.
-        h2(key)= 1+(key%(table_size-1))
         Complexity:
         Best Case Complexity:
         Worst Case Complexity:
         """
-        h2v = 0
+        hash_value = 0
+
         for char in key:
-            h2v = (h2v+ord(char)) % (self.table_size-1)
-        return h2v
+            hash_value = (hash_value + ord(char))*68 / 37
+        
+        hash_value = int(hash_value)
+        hash_value %= (self.table_size - 1)
+        return max(1, hash_value)
 
     @property
     def table_size(self) -> int:
@@ -85,42 +84,43 @@ class HashyStepTable(Generic[K, V]):
         """
         Returns number of elements in the hash table
         """
-
+        return self.count
 
     def _hashy_probe(self, key: K, is_insert: bool) -> int:
         """
         Find the correct position for this key in the hash table using hashy probing.
-
-        Find the correct position for this key in the Hash Table using linear probing. This method should use the hash2 method to determine the step size when probing.
-
         Raises:
         KeyError: When the key is not in the table, but is_insert is False.
         FullError: When a table is full and cannot be inserted.
-
         Complexity:
         Best Case Complexity:
         Worst Case Complexity:
         """
         # Initial position
         position = self.hash(key)
+       
+        # Step size
+        step = self.hash2(key)
 
+        if is_insert and self.is_full():
+            raise FullError("table is full")
+        
         while True:
             if self.array[position] is None: #no element at position
                 if is_insert:
                     return position
                 else:
-                    raise KeyError(key)
+                    raise KeyError(key) # check finds no element with that key
+            
             elif self.array[position][0] == key: #item associated with key is being updated
                 return position
             
             else: #collision handling
-                step = self.hash2(key)
                 position = (position + step) % self.table_size #takes a step forward based upon the value of the key to avoid clustering.
 
     def keys(self) -> list[K]:
         """
         Returns all keys in the hash table.
-
         :complexity: O(N) where N is self.table_size.
         """
         res = []
@@ -132,7 +132,6 @@ class HashyStepTable(Generic[K, V]):
     def values(self) -> list[V]:
         """
         Returns all values in the hash table.
-
         :complexity: O(N) where N is self.table_size.
         """
         res = []
@@ -144,7 +143,6 @@ class HashyStepTable(Generic[K, V]):
     def __contains__(self, key: K) -> bool:
         """
         Checks to see if the given key is in the Hash Table
-
         :complexity: See hashy probe.
         """
         try:
@@ -157,7 +155,6 @@ class HashyStepTable(Generic[K, V]):
     def __getitem__(self, key: K) -> V:
         """
         Get the value at a certain key
-
         :complexity: See hashy probe.
         :raises KeyError: when the key doesn't exist.
         """
@@ -167,33 +164,33 @@ class HashyStepTable(Generic[K, V]):
     def __setitem__(self, key: K, data: V) -> None:
         """
         Set an (key, value) pair in our hash table.
-
         :complexity: See hashy probe.
         :raises FullError: when the table cannot be resized further.
         """
-
+    
         position = self._hashy_probe(key, True)
 
-        if self.array[position] is None:
+        if self.array[position] == None:
             self.count += 1
-
+            
         self.array[position] = (key, data)
 
         if len(self) > self.table_size * 2 / 3:
+            
             self._rehash()
 
     def __delitem__(self, key: K) -> None:
         """
-        Deletes a (key, value) using sentinel deletion
-
+        Deletes a (key, value) using lazy deletion
         Complexity:
         Best Case Complexity:
         Worst Case Complexity:
         """
-        position = self.hash(key)
-        step 
-        while True:
-            
+
+        position = self._hashy_probe(key, False)
+        self.array[position] = ('$', None)
+        self.count -= 1
+        self.dels += 1
 
     def is_empty(self) -> bool:
         return self.count == 0
@@ -204,12 +201,25 @@ class HashyStepTable(Generic[K, V]):
     def _rehash(self) -> None:
         """
         Need to resize table and reinsert all values
-
         Complexity:
         Best Case Complexity:
         Worst Case Complexity:
         """
-        raise NotImplementedError
+        if self.size_index == len(self.TABLE_SIZES): #max table size
+            return
+        
+        old_array = self.array
+        self.size_index += 1
+        self.array = ArrayR(self.TABLE_SIZES[self.size_index])
+        self.count = 0
+
+        for pair in old_array:
+            if pair is not None:
+                key, value = pair
+                if key != '$': #check if sentinel delete has been performed
+                    self[key] = value
+        
+
 
     def __str__(self) -> str:
         """

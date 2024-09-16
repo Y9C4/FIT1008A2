@@ -46,12 +46,13 @@ class TestTask3(TestCase):
             self.assertEqual(self.step_table[player_stat.value], i, f"Player stat {player_stat.name} not set to {i}")
         self.assertEqual(len(self.step_table), len(PlayerStats), f"Wrong length: expected {len(PlayerStats)}, got {len(self.step_table)}")
 
+
     @number("3.5")
     @visibility(visibility.VISIBILITY_SHOW)
     def test_step_hash_delete(self):
         for i, player_stat in enumerate(PlayerStats):
             self.step_table[player_stat.value] = i
-
+            
         for i, player_stat in enumerate(PlayerStats):
             del self.step_table[player_stat.value]
             self.assertRaises(KeyError, lambda: self.step_table[player_stat.value])
