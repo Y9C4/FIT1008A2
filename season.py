@@ -1,6 +1,9 @@
 from __future__ import annotations
 from data_structures.bset import BSet
 from data_structures.referential_array import ArrayR
+from data_structures.array_sorted_list import ArraySortedList
+from data_structures.linked_list import LinkedList
+from data_structures.hash_table_separate_chaining import HashTableSeparateChaining
 from dataclasses import dataclass
 from team import Team
 from typing import Generator, Union
@@ -37,6 +40,7 @@ class WeekOfGames:
         """
         self.games: ArrayR[Game] = games
         self.week: int = week
+        self._current_index = 0 #property used for iterate and next method
 
     def get_games(self) -> ArrayR:
         """
@@ -62,7 +66,7 @@ class WeekOfGames:
         Best Case Complexity: O(1)
         Worst Case Complexity: O(1)
         """
-        return self.week
+        return self
 
     def __iter__(self):
         """
@@ -70,7 +74,9 @@ class WeekOfGames:
         Best Case Complexity:
         Worst Case Complexity:
         """
-        raise NotImplementedError
+        self._current_index = 0
+        return self
+        
 
     def __next__(self):
         """
@@ -78,15 +84,27 @@ class WeekOfGames:
         Best Case Complexity:
         Worst Case Complexity:
         """
-        raise NotImplementedError
+        if self._current_index >= len(self.games):
+            raise StopIteration  # No more games to iterate over
+        game = self.games[self._current_index]
+        self._current_index += 1
+        return game
+
 
 
 class Season:
 
     def __init__(self, teams: ArrayR[Team]) -> None:
         """
-        Initializes the season with a schedule.
+        Initializes the season with the following attributes:
 
+            leaderboard : A data structure that holds; by default in descending order of points; the teams taking part in the season. If there is a tie on points, you must break the tie by the goal_difference of the team. If there is still a tie, then it should be broken by goals_for of the team. If there is still a tie, then you must order the teams alphabetically, however, if the name sorts it, this MUST be done in an ascending order. During initialisation, the leaderboard must contain all teams and they should be sorted by name (as all the other stats are 0 or None)
+
+            schedule : A data structure that will hold the randomized schedule of the season. 
+            NOTE - The logic to generate this has already been done for you. You just need to call the method _generate_schedule() while creating this instance variable and then store the returned ArrayR into an appropriate data structure (you cannot store it as an ArrayR).
+
+            teams - The original ArrayR of teams participating in the season.
+        
         Args:
             teams (ArrayR[Team]): The teams played in this season.
 
@@ -94,7 +112,18 @@ class Season:
             Best Case Complexity:
             Worst Case Complexity:
         """
-        raise NotImplementedError
+        self.leaderboard = ArraySortedList(10)
+        for team in teams: #adds team at the correct index
+            self.leaderboard.add(team)
+        
+        self.teams = teams
+        
+        schedule_array = self._generate_schedule() #generate schedule
+        self.schedule = LinkedList()
+
+        for week_ind in range(0, len(schedule_array)):
+            gameweek = WeekOfGames(week_ind, schedule_array[week_ind])
+            self.schedule.append(gameweek)
 
     def _generate_schedule(self) -> ArrayR[ArrayR[Game]]:
         """
@@ -168,7 +197,17 @@ class Season:
             Best Case Complexity:
             Worst Case Complexity:
         """
-        raise NotImplementedError
+
+        delayed_week = self.schedule[orig_week]
+        self.schedule[orig_week] = WeekOfGames(orig_week, ArrayR(1))
+
+
+        if new_week == None:
+            self.schedule.append(delayed_week)
+        else:
+            self.schedule.insert(new_week, delayed_week)
+
+
 
     def get_next_game(self) -> Union[Generator[Game], None]:
         """
@@ -182,7 +221,10 @@ class Season:
             Best Case Complexity:
             Worst Case Complexity:
         """
-        raise NotImplementedError
+
+        for week in self.schedule:
+            for game in week:
+                yield game
 
     def get_leaderboard(self) -> ArrayR[ArrayR[Union[int, str]]]:
         """
@@ -218,7 +260,7 @@ class Season:
             Best Case Complexity:
             Worst Case Complexity:
         """
-        raise NotImplementedError
+        return self.teams
 
     def __len__(self) -> int:
         """

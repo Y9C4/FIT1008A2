@@ -4,6 +4,8 @@ from constants import GameResult, PlayerPosition, PlayerStats, TeamStats
 from player import Player
 from typing import Collection, Union, TypeVar
 from data_structures.hash_table import LinearProbeTable
+from hashy_perfection_table import HashyPerfectionTable
+from hashy_step_table import HashyStepTable
 from data_structures.linked_list import LinkedList
 from data_structures.linked_queue import LinkedQueue
 
@@ -41,7 +43,7 @@ class Team:
         self.name = team_name
         self.number = Team.team_num
         Team.team_num += 1
-        self.statistics = LinearProbeTable()
+        self.statistics = HashyStepTable()
         self.num_players = 0
         
         for stat in TeamStats:
@@ -50,7 +52,7 @@ class Team:
             else:
                self.statistics[stat.value] = 0
         
-        self.players = LinearProbeTable()
+        self.players = HashyStepTable()
         
         for position in PlayerPosition: #create the player position arrays
             self.players[position.value] = LinkedList()
@@ -357,3 +359,15 @@ class Team:
         """Returns a string representation of the Team object.
         Useful for debugging or when the Team is held in another data structure."""
         return str(self)
+    
+    def __lt__(self, other_team: Team) -> bool:
+        if self.statistics["Points"] == other_team.statistics["Points"]:
+            if self.statistics["Goals Difference"] == other_team.statistics["Goals Difference"]:
+                if self.statistics["Goals For"] == other_team.statistics["Goals For"]:
+                    return self.name < other_team.name
+                return self.statistics["Goals For"] < other_team.statistics["Goals For"]
+            return self.statistics["Goals Difference"] < other_team.statistics["Goals Difference"]
+        return self.statistics["Points"] < other_team.statistics["Points"]
+    
+
+    

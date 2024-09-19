@@ -2,6 +2,7 @@ from __future__ import annotations
 from constants import PlayerPosition, PlayerStats
 from data_structures.hash_table import LinearProbeTable
 from data_structures.referential_array import ArrayR
+from hashy_perfection_table import HashyPerfectionTable
 
 
 class Player:
@@ -33,7 +34,7 @@ class Player:
         self.name = name
         self.position = position
         self.age = age
-        self.statistics = LinearProbeTable()
+        self.statistics = HashyPerfectionTable() #still needs to be swapped with one of the custom hash tables
             
         for stat in PlayerStats:
             if stat.value == "Last Five Results":

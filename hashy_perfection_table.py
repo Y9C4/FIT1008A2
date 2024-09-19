@@ -37,7 +37,7 @@ class HashyPerfectionTable(Generic[K, V]):
         """
         
         hash_value = 0
-        for char in key:
+        for char in key: #iterator
             hash_value = (hash_value + ord(char))* 68 / 37
         
         hash_value //= 1
