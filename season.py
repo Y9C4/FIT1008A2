@@ -66,7 +66,7 @@ class WeekOfGames:
         Best Case Complexity: O(1)
         Worst Case Complexity: O(1)
         """
-        return self
+        return self.week
 
     def __iter__(self):
         """
@@ -197,16 +197,15 @@ class Season:
             Best Case Complexity:
             Worst Case Complexity:
         """
-
-        delayed_week = self.schedule[orig_week]
-        self.schedule[orig_week] = WeekOfGames(orig_week, ArrayR(1))
-
+        delayed_week = self.schedule[orig_week-1]
+        self.schedule.remove(delayed_week)
 
         if new_week == None:
-            self.schedule.append(delayed_week)
+            new_week = len(self.schedule)
         else:
-            self.schedule.insert(new_week, delayed_week)
-
+            new_week -= 1
+        
+        self.schedule.insert(new_week, delayed_week)
 
 
     def get_next_game(self) -> Union[Generator[Game], None]:
@@ -270,7 +269,7 @@ class Season:
             Best Case Complexity:
             Worst Case Complexity:
         """
-        raise NotImplementedError
+        return len(self.teams)
 
     def __str__(self) -> str:
         """
