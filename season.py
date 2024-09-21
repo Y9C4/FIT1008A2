@@ -3,7 +3,7 @@ from data_structures.bset import BSet
 from data_structures.referential_array import ArrayR
 from data_structures.array_sorted_list import ArraySortedList
 from data_structures.linked_list import LinkedList
-from data_structures.hash_table_separate_chaining import HashTableSeparateChaining
+from game_simulator import GameSimulator
 from dataclasses import dataclass
 from team import Team
 from typing import Generator, Union
@@ -183,8 +183,23 @@ class Season:
             Best Case Complexity:
             Worst Case Complexity:
         """
-        raise NotImplementedError
 
+        results_list = LinkedList()
+        game_iterator = self.get_next_game()
+        
+        for game in game_iterator:
+            results_list.append(GameSimulator.simulate(game.home_team, game.away_team))
+        
+        for result in results_list:
+            self.leaderboard.index()
+            if result["Home Goals"] > result["Away Goals"]:
+            
+            elif result["Home Goals"] < result["Away Goal"]:
+                winner = "away"
+            else:
+                winner = "draw"
+            
+        
     def delay_week_of_games(self, orig_week: int, new_week: Union[int, None] = None) -> None:
         """
         Delay a week of games from one week to another.
