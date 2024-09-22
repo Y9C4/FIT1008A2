@@ -184,7 +184,9 @@ class Season:
             Best Case Complexity:
             Worst Case Complexity:
         """              
-        
+        #check how many games are actually in the schedule:
+     
+
         results_list = LinkedList()
         game_iterator = self.get_next_game()
         game_index = 0
@@ -196,7 +198,6 @@ class Season:
             results_list.append(result)
             game_index += 1
         
-        print(game_index)
         #update the leaderboard object
         for i in range(game_index):
             #method to find home team's index in the leaderboard
@@ -211,8 +212,8 @@ class Season:
             home_goals = results_list[i][ResultStats.HOME_GOALS.value]
             away_goals = results_list[i][ResultStats.AWAY_GOALS.value]
             
-            self.leaderboard[home_index][TeamStats.GAMES_PLAYED] += 1
-            self.leaderboard[away_index][TeamStats.GAMES_PLAYED] += 1
+            # self.leaderboard[home_index][TeamStats.GAMES_PLAYED] += 1
+            # self.leaderboard[away_index][TeamStats.GAMES_PLAYED] += 1
             
             #Handling wins/losses/draws and subsequently last 5 games and points
             if home_goals > away_goals:
@@ -238,7 +239,7 @@ class Season:
             goal_assists = results_list[i]["Goal Assists"] or ArrayR(1)
             interceptions = results_list[i]["Interceptions"] or ArrayR(1)
             tackles = results_list[i]["Tackles"] or ArrayR(1)
-
+            print(goal_scorers)
             for pos in PlayerPosition:
                 for player in self.leaderboard[home_index].players[pos.value]:
                     player[PlayerStats.GAMES_PLAYED] += 1
@@ -253,12 +254,19 @@ class Season:
                     player[PlayerStats.ASSISTS] += self.count_in_array(goal_assists, player.name)
                     player[PlayerStats.INTERCEPTIONS] += self.count_in_array(interceptions, player.name)
                     player[PlayerStats.TACKLES] += self.count_in_array(tackles, player.name)
+        
 
-
-
-
-
-    def count_in_array(self, array: ArrayR[str], name: str) -> int:
+        all_players = []
+        for team in self.leaderboard:
+            ll = team.get_players()
+            for i in ll:
+                all_players.append(i)
+        
+        for player in all_players:
+            if player.name == "Ann Caicedo":
+                print(player[PlayerStats.GOALS])
+    
+    def count_in_array(self, array: ArrayR[str], name: str) -> int: #used to count how many times an element appears in an Referential Array
         count = 0
         for i in range(len(array)):
             if array[i] == name:

@@ -95,7 +95,7 @@ class TestTask5(TestCase):
         self.season = Season(teams)
         self.season.simulate_season()
         for team in teams:
-           self.assertEqual(team[TeamStats.GAMES_PLAYED], 6, "All teams should have played 38 games")
+           self.assertEqual(team[TeamStats.GAMES_PLAYED], 6, "All teams should have played 6 games")
 
     @number("5.2")
     @visibility(visibility.VISIBILITY_SHOW)
