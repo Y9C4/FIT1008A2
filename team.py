@@ -37,8 +37,8 @@ class Team:
             None
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(N) where N is len(TeamStats) and len(players) <= len(TeamStats)
+            Worst Case Complexity: O(N) where N is when len(players) > len(TeamStats)
         """
         self.name = team_name
         self.number = Team.team_num
@@ -46,7 +46,7 @@ class Team:
         self.statistics = HashyStepTable()
         self.num_players = 0
         
-        for stat in TeamStats:
+        for stat in TeamStats: 
             if stat.value == "Last Five Results":
                 self.statistics[stat.value] = LinkedQueue()
             else:
@@ -66,8 +66,8 @@ class Team:
         Resets all the statistics of the team to the values they were during init.
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(N) where N is len(TeamStats) and len(players) <= len(TeamStats)
+            Worst Case Complexity: O(N) where N is when len(players) > len(TeamStats)
         """
         for stat in TeamStats:
             if stat.value == "Last Five Results":
@@ -86,8 +86,8 @@ class Team:
             None
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) Setting an key value pair in a Hash table has constant complexity
+            Worst Case Complexity: O(1) Setting an key value pair in a Hash table has constant complexity
         """
         self.players[player.position.value].append(player)
         self.num_players += 1
@@ -103,8 +103,8 @@ class Team:
             None
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) Setting an key value pair in a Hash table has constant complexity
+            Worst Case Complexity: O(1) Setting an key value pair in a Hash table has constant complexity
         """
         self.players[player.position.value].delete_at_index(self.players[player.position.value].index(player))
         self.num_players -= 1
@@ -145,8 +145,8 @@ class Team:
             None: When no players match the criteria / team has no players
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(N) where N is the number of players in the team at that play a certain position.
+            Worst Case Complexity: O(M*N) where M is the number of positions in the team and N is the same as best case.
         """
         
         return_players = LinkedList()
@@ -172,8 +172,8 @@ class Team:
             statistics: The teams' statistics
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) returning an object
+            Worst Case Complexity: O(1) returning an object
         """
         return self.statistics
 
@@ -199,8 +199,8 @@ class Team:
             None if the team has not played any games.
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) when there TeamStats.LAST_FIVE_RESULTS is empty and nothing is returned
+            Worst Case Complexity: O(1) when the last five results array is returned
         """
         if len(self.statistics["Last Five Results"]) < 1:
             return None
@@ -249,8 +249,8 @@ class Team:
             value (int): The new value of the statistic
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) updating/setting a key value pair in a hash table has a constant complexity
+            Worst Case Complexity: O(1) ^
         """
 
         if statistic.value == "Games Played":
@@ -321,8 +321,8 @@ class Team:
             ValueError: If the statistic is invalid
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) returning a value from a hash table has constant complexity
+            Worst Case Complexity: O(1) ^
         """
         return self.statistics[statistic.value]
 
@@ -331,8 +331,8 @@ class Team:
         Returns the number of players in the team.
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(N*M) based on complexity of self.get_players() which is M*N where M is the number of positions in the team and N is the same as best case.
+            Worst Case Complexity: O(N*M) ^ same as best case.
         """
         player_list = self.get_players()
         if player_list == None:
@@ -361,6 +361,11 @@ class Team:
         return str(self)
     
     def __lt__(self, other_team: Team) -> bool:
+        """
+        Complexity:
+            Best Case Complexity: O(1) retriving items from a hash table has constant time complexity
+            Worst Case Complexity: O(1) retriving items from a hash table has constant time complexity
+        """
         if self.statistics["Points"] == other_team.statistics["Points"]:
             if self.statistics["Goals Difference"] == other_team.statistics["Goals Difference"]:
                 if self.statistics["Goals For"] == other_team.statistics["Goals For"]:

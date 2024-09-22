@@ -2,6 +2,8 @@ from __future__ import annotations
 from data_structures.bset import BSet
 from data_structures.referential_array import ArrayR
 from data_structures.array_sorted_list import ArraySortedList
+from data_structures.linked_queue import LinkedQueue
+from hashy_step_table import HashyStepTable
 from data_structures.linked_list import LinkedList
 from game_simulator import GameSimulator
 from dataclasses import dataclass
@@ -72,8 +74,8 @@ class WeekOfGames:
     def __iter__(self):
         """
         Complexity:
-        Best Case Complexity:
-        Worst Case Complexity:
+        Best Case Complexity: O(1)
+        Worst Case Complexity: O(1)
         """
         self._current_index = 0
         return self
@@ -110,8 +112,8 @@ class Season:
             teams (ArrayR[Team]): The teams played in this season.
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(N) where N is max(len(schedule), teams)
+            Worst Case Complexity: O(N) same as best case ^
         """
         self.leaderboard = ArraySortedList(10)
         for team in teams: #adds team at the correct index
@@ -181,8 +183,8 @@ class Season:
             Assume simulate_game is O(1)
             Remember to define your variables and their complexity.
 
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(N*M*P) where N is the number of games in the schedule, M is the number of playerpositions and P is the number of players on the home + away teams
+            Worst Case Complexity: O(N*M*P) ^ same as best case
         """              
         #check how many games are actually in the schedule:
      
@@ -212,8 +214,6 @@ class Season:
             home_goals = results_list[i][ResultStats.HOME_GOALS.value]
             away_goals = results_list[i][ResultStats.AWAY_GOALS.value]
             
-            # self.leaderboard[home_index][TeamStats.GAMES_PLAYED] += 1
-            # self.leaderboard[away_index][TeamStats.GAMES_PLAYED] += 1
             
             #Handling wins/losses/draws and subsequently last 5 games and points
             if home_goals > away_goals:
@@ -233,40 +233,29 @@ class Season:
             self.leaderboard[away_index][TeamStats.GOALS_FOR] += away_goals
             self.leaderboard[away_index][TeamStats.GOALS_AGAINST] += home_goals
 
-            #updating playerstats:
 
             goal_scorers = results_list[i]["Goal Scorers"] or ArrayR(1)
             goal_assists = results_list[i]["Goal Assists"] or ArrayR(1)
             interceptions = results_list[i]["Interceptions"] or ArrayR(1)
             tackles = results_list[i]["Tackles"] or ArrayR(1)
-            print(goal_scorers)
+            
             for pos in PlayerPosition:
                 for player in self.leaderboard[home_index].players[pos.value]:
                     player[PlayerStats.GAMES_PLAYED] += 1
                     player[PlayerStats.GOALS] += self.count_in_array(goal_scorers, player.name)
+                    
                     player[PlayerStats.ASSISTS] += self.count_in_array(goal_assists, player.name)
                     player[PlayerStats.INTERCEPTIONS] += self.count_in_array(interceptions, player.name)
                     player[PlayerStats.TACKLES] += self.count_in_array(tackles, player.name)
                 
-                for player in self.leaderboard[home_index].players[pos.value]:
+                for player in self.leaderboard[away_index].players[pos.value]:
                     player[PlayerStats.GAMES_PLAYED] += 1
                     player[PlayerStats.GOALS] += self.count_in_array(goal_scorers, player.name)
                     player[PlayerStats.ASSISTS] += self.count_in_array(goal_assists, player.name)
                     player[PlayerStats.INTERCEPTIONS] += self.count_in_array(interceptions, player.name)
                     player[PlayerStats.TACKLES] += self.count_in_array(tackles, player.name)
-        
-
-        all_players = []
-        for team in self.leaderboard:
-            ll = team.get_players()
-            for i in ll:
-                all_players.append(i)
-        
-        for player in all_players:
-            if player.name == "Ann Caicedo":
-                print(player[PlayerStats.GOALS])
     
-    def count_in_array(self, array: ArrayR[str], name: str) -> int: #used to count how many times an element appears in an Referential Array
+    def count_in_array(self, array: ArrayR[str], name: str) -> int: 
         count = 0
         for i in range(len(array)):
             if array[i] == name:
@@ -283,8 +272,8 @@ class Season:
             new_week (Union[int, None]): The new week to move the games to. If this is None, it moves the games to the end of the season.
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) if delaying to the final week
+            Worst Case Complexity: O(1) as inserting into a given index in a LinkedList has a constant time complexity
         """
         delayed_week = self.schedule[orig_week-1]
         self.schedule.remove(delayed_week)
@@ -306,8 +295,8 @@ class Season:
             or None if there are no more games left.
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) per iteration.
+            Worst Case Complexity: O(1) per iteration.
         """
 
         for week in self.schedule:
@@ -334,19 +323,43 @@ class Season:
                     - Previous Five Results (ArrayR(str)) where result should be WIN LOSS OR DRAW
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(N) where N is the number of teams in self.leaderboards, and the leaderboard is already sorted
+            Worst Case Complexity: O(N*M) where N is the number of teams in self.leaderboards, and M is the number of shuffles that need to be made in self.leaderboard
         """
-        raise NotImplementedError
+        #resort the leaderboard as it is only sorted when being inserted
+        old_leaderboard = self.leaderboard
+        self.leaderboard = ArraySortedList(len(old_leaderboard))
+        for team in old_leaderboard:
+            self.leaderboard.add(team)
+        
+        
+        leaderboard_data = ArrayR[ArrayR[Union[int, str]]](len(self.leaderboard))
 
+        for index, team in enumerate(reversed(self.leaderboard)):
+            data_row = ArrayR(10)   # Assuming 10 elements in the inner array
+
+            data_row[0] = team.name  # Team name
+            data_row[1] = team[TeamStats.GAMES_PLAYED]
+            data_row[2] = team[TeamStats.POINTS]
+            data_row[3] = team[TeamStats.WINS]
+            data_row[4] = team[TeamStats.DRAWS]
+            data_row[5] = team[TeamStats.LOSSES]
+            data_row[6] = team[TeamStats.GOALS_FOR]
+            data_row[7] = team[TeamStats.GOALS_AGAINST]
+            data_row[8] = team[TeamStats.GOALS_DIFFERENCE]
+            data_row[9] = team[TeamStats.LAST_FIVE_RESULTS]
+
+            leaderboard_data[index] = data_row
+        return leaderboard_data
+        
     def get_teams(self) -> ArrayR[Team]:
         """
         Returns:
             PlayerPosition (ArrayR(Team)): The teams participating in the season.
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) returning an object has constant time complexity
+            Worst Case Complexity: O(1) ^ same as best case
         """
         return self.teams
 
@@ -355,8 +368,8 @@ class Season:
         Returns the number of teams in the season.
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) - ArrayR.__len__() has constant time complexity
+            Worst Case Complexity: O(1) ^
         """
         return len(self.teams)
 

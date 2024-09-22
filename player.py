@@ -27,8 +27,8 @@ class Player:
             None
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(N) where N is the number of stats in PlayerStats class. ie len(PlayerStats)
+            Worst Case Complexity: O(N) where N is the number of stats in PlayerStats class. ie len(PlayerStats)
 
         """
         self.name = name
@@ -43,7 +43,6 @@ class Player:
                 self.statistics[stat.value] = 0
             
 
-
     def reset_stats(self) -> None:
         """
         resets all  PlayerStats stats to 0. identical to __init__
@@ -52,12 +51,14 @@ class Player:
             None
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
-
+            Best Case Complexity: O(N) where N is the number of stats in PlayerStats class. ie len(PlayerStats)
+            Worst Case Complexity: O(N) where N is the number of stats in PlayerStats class. ie len(PlayerStats)
         """       
         for stat in PlayerStats:
-            self.statistics[stat.value] = 0
+            if stat.value == "Last Five Results":
+                self.statistics[stat.value] = ArrayR(5)
+            else:
+                self.statistics[stat.value] = 0
 
     def get_name(self) -> str:
         """
@@ -67,8 +68,8 @@ class Player:
             str: The name of the player
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) returns a single item
+            Worst Case Complexity: O(1) returns a single item
         """
         return self.name
 
@@ -80,8 +81,8 @@ class Player:
             PlayerPosition: The position of the player
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) returns a single item
+            Worst Case Complexity: O(1) returns a single item
         """
         return self.position
 
@@ -93,8 +94,8 @@ class Player:
             statistics: The players' statistics
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) returns a single object
+            Worst Case Complexity: O(1) returns a single object
         """
         return self.statistics
 
@@ -113,8 +114,8 @@ class Player:
             None
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: O(1) Setting an key value pair in a Hash table has constant complexity
+            Worst Case Complexity: O(1) Setting an key value pair in a Hash table has constant complexity
         """
         if type(statistic) == PlayerStats:
             statistic = statistic.value
@@ -133,8 +134,8 @@ class Player:
             int: The value of the stat
 
         Complexity:
-            Best Case Complexity:
-            Worst Case Complexity:
+            Best Case Complexity: Returning a value from a Hash table has a constant time complexity
+            Worst Case Complexity: Returning a value from a Hash table has a constant time complexity
         """
         return self.statistics[statistic.value]
 

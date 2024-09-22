@@ -32,8 +32,8 @@ class HashyPerfectionTable(Generic[K, V]):
         """
         Hash a key for insert/retrieve/update into the hashtable.
         Complexity:
-        Best Case Complexity:
-        Worst Case Complexity:
+        Best Case Complexity: O(1) all operations have a constant time complexity (i.e. no for loops)
+        Worst Case Complexity: O(1) ^ same as best case
         """
         return int((89*ord(key[0]) / 23*ord(key[-1])) + len(key)*11.74) %13
 

@@ -64,8 +64,8 @@ class HashyStepTable(Generic[K, V]):
         """
         Used to determine the step size for our hash table.
         Complexity:
-        Best Case Complexity:
-        Worst Case Complexity:
+        Best Case Complexity: O(len(key))
+        Worst Case Complexity: O(len(key))
         """
         hash_value = 0
 
@@ -93,8 +93,8 @@ class HashyStepTable(Generic[K, V]):
         KeyError: When the key is not in the table, but is_insert is False.
         FullError: When a table is full and cannot be inserted.
         Complexity:
-        Best Case Complexity:
-        Worst Case Complexity:
+        Best Case Complexity: O(1) when table is full
+        Worst Case Complexity: O(N) where N is the number of collisions that occur until the correct index to insert is found/returned
         """
         # Initial position
         position = self.hash(key)
