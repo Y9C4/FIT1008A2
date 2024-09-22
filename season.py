@@ -7,6 +7,7 @@ from game_simulator import GameSimulator
 from dataclasses import dataclass
 from team import Team
 from typing import Generator, Union
+from constants import TeamStats, PlayerStats, PlayerPosition, ResultStats
 
 
 @dataclass
@@ -182,24 +183,89 @@ class Season:
 
             Best Case Complexity:
             Worst Case Complexity:
-        """
-
+        """              
+        
         results_list = LinkedList()
         game_iterator = self.get_next_game()
-        
+        game_index = 0
+        #simulate the games
         for game in game_iterator:
-            results_list.append(GameSimulator.simulate(game.home_team, game.away_team))
+            result = GameSimulator.simulate(game.home_team, game.away_team)
+            result["home team"] = game.home_team
+            result["away team"] = game.away_team
+            results_list.append(result)
+            game_index += 1
         
-        for result in results_list:
-            self.leaderboard.index()
-            if result["Home Goals"] > result["Away Goals"]:
+        print(game_index)
+        #update the leaderboard object
+        for i in range(game_index):
+            #method to find home team's index in the leaderboard
+            for m in range(len(self.leaderboard)):
+                if self.leaderboard[m].name == results_list[i]["home team"].name:
+                    home_index = m
+            #method to find the away team's index in the leaderboard
+            for m in range(len(self.leaderboard)):
+                if self.leaderboard[m].name == results_list[i]["away team"].name:
+                    away_index = m
+
+            home_goals = results_list[i][ResultStats.HOME_GOALS.value]
+            away_goals = results_list[i][ResultStats.AWAY_GOALS.value]
             
-            elif result["Home Goals"] < result["Away Goal"]:
-                winner = "away"
+            self.leaderboard[home_index][TeamStats.GAMES_PLAYED] += 1
+            self.leaderboard[away_index][TeamStats.GAMES_PLAYED] += 1
+            
+            #Handling wins/losses/draws and subsequently last 5 games and points
+            if home_goals > away_goals:
+                self.leaderboard[home_index][TeamStats.WINS] += 1
+                self.leaderboard[away_index][TeamStats.LOSSES] += 1
+            elif away_goals > home_goals:
+                self.leaderboard[away_index][TeamStats.WINS] += 1
+                self.leaderboard[home_index][TeamStats.LOSSES] += 1
             else:
-                winner = "draw"
+                self.leaderboard[away_index][TeamStats.DRAWS] += 1
+                self.leaderboard[home_index][TeamStats.DRAWS] += 1
             
-        
+            #handling goals for and against and subsequently goals difference
+            self.leaderboard[home_index][TeamStats.GOALS_FOR] += home_goals
+            self.leaderboard[home_index][TeamStats.GOALS_AGAINST] += away_goals
+
+            self.leaderboard[away_index][TeamStats.GOALS_FOR] += away_goals
+            self.leaderboard[away_index][TeamStats.GOALS_AGAINST] += home_goals
+
+            #updating playerstats:
+
+            goal_scorers = results_list[i]["Goal Scorers"] or ArrayR(1)
+            goal_assists = results_list[i]["Goal Assists"] or ArrayR(1)
+            interceptions = results_list[i]["Interceptions"] or ArrayR(1)
+            tackles = results_list[i]["Tackles"] or ArrayR(1)
+
+            for pos in PlayerPosition:
+                for player in self.leaderboard[home_index].players[pos.value]:
+                    player[PlayerStats.GAMES_PLAYED] += 1
+                    player[PlayerStats.GOALS] += self.count_in_array(goal_scorers, player.name)
+                    player[PlayerStats.ASSISTS] += self.count_in_array(goal_assists, player.name)
+                    player[PlayerStats.INTERCEPTIONS] += self.count_in_array(interceptions, player.name)
+                    player[PlayerStats.TACKLES] += self.count_in_array(tackles, player.name)
+                
+                for player in self.leaderboard[home_index].players[pos.value]:
+                    player[PlayerStats.GAMES_PLAYED] += 1
+                    player[PlayerStats.GOALS] += self.count_in_array(goal_scorers, player.name)
+                    player[PlayerStats.ASSISTS] += self.count_in_array(goal_assists, player.name)
+                    player[PlayerStats.INTERCEPTIONS] += self.count_in_array(interceptions, player.name)
+                    player[PlayerStats.TACKLES] += self.count_in_array(tackles, player.name)
+
+
+
+
+
+    def count_in_array(self, array: ArrayR[str], name: str) -> int:
+        count = 0
+        for i in range(len(array)):
+            if array[i] == name:
+                count += 1
+        return count
+
+
     def delay_week_of_games(self, orig_week: int, new_week: Union[int, None] = None) -> None:
         """
         Delay a week of games from one week to another.

@@ -368,6 +368,3 @@ class Team:
                 return self.statistics["Goals For"] < other_team.statistics["Goals For"]
             return self.statistics["Goals Difference"] < other_team.statistics["Goals Difference"]
         return self.statistics["Points"] < other_team.statistics["Points"]
-    
-
-    

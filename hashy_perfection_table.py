@@ -35,15 +35,7 @@ class HashyPerfectionTable(Generic[K, V]):
         Best Case Complexity:
         Worst Case Complexity:
         """
-        
-        hash_value = 0
-        for char in key: #iterator
-            hash_value = (hash_value + ord(char))* 68 / 37
-        
-        hash_value //= 1
-        hash_value %= 13
-
-        return int(hash_value)
+        return int((89*ord(key[0]) / 23*ord(key[-1])) + len(key)*11.74) %13
 
     def __len__(self) -> int:
         """
